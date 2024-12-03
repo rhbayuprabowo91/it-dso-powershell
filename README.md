@@ -1,103 +1,219 @@
-# PowerShell System Administration Tools
+# PowerShell System Administration Toolkit
 
-A collection of PowerShell scripts for system administrators to help with common IT tasks such as password management, network scanning, and remote access.
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue.svg)](https://github.com/PowerShell/PowerShell)
+[![LAPS](https://img.shields.io/badge/LAPS-Required-yellow.svg)](https://www.microsoft.com/en-us/download/details.aspx?id=46899)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Scripts Overview
+A comprehensive collection of PowerShell scripts for system administrators to streamline common IT tasks such as password management, network scanning, and remote access management.
 
-### 1. Get-PasswordLAPS.ps1
-Script for retrieving LAPS (Local Administrator Password Solution) passwords from domain-joined computers.
-- Automatically detects current domain
-- Secure password handling
-- Error handling with helpful messages
-- Exit option after each password retrieval
+## 📋 Table of Contents
 
-### 2. Ping-Computer.ps1
-Advanced network scanning tool with configurable options.
-- Full subnet scanning (configurable range)
-- IP address validation
-- Optional DNS resolution
-- Parallel execution in PowerShell 7
-- Progress feedback
-- Supports both PowerShell 5.1 and 7+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Security](#security)
+- [Logging](#logging)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
 
-### 3. Remote-Computer.ps1
-Interactive remote access tool with multiple authentication methods.
-- Menu-driven interface
-- Support for LAPS and custom credentials
-- Configurable default admin account
-- Comprehensive error handling
-- Automatic domain detection
-
-## Requirements
-
-### General Requirements
-- Windows PowerShell 5.1 or PowerShell 7+
-- Domain environment with proper permissions
-- LAPS PowerShell module (for LAPS functionality)
-
-### For LAPS Features
-- Active Directory environment
-- LAPS installed and configured in the domain
-- Appropriate permissions to read LAPS passwords
-
-### For Network Scanning
-- Network access to target subnets
-- Appropriate firewall rules for ICMP
-- DNS resolution (optional)
-
-### For Remote Access
-- Remote management enabled on target computers
-- Appropriate network connectivity
-- Required permissions for remote access
-
-## Configuration
+## ✨ Features
 
 ### Get-PasswordLAPS.ps1
-- Automatically uses current domain
-- No manual configuration required
+Advanced LAPS password management tool with:
+- Automatic domain detection
+- Secure credential handling
+- Credential caching with configurable timeout
+- Comprehensive logging
+- Connectivity testing
+- Detailed error messages and troubleshooting
 
 ### Ping-Computer.ps1
-Configurable options include:
-- Custom IP ranges
-- DNS lookup toggle
-- Parallel execution settings (PowerShell 7)
+Sophisticated network scanning utility featuring:
+- Parallel IP scanning (PowerShell 7+)
+- Configurable IP ranges
+- DNS resolution
+- CSV and HTML report generation
+- Progress tracking
+- Performance optimization
 
 ### Remote-Computer.ps1
-Configuration in script header:
+Enhanced remote access management tool offering:
+- Multiple authentication methods (LAPS/Local)
+- Connection history tracking
+- Credential caching
+- Automatic retry mechanism
+- Session validation
+- Interactive menu system
+
+## 🔧 Requirements
+
+### System Requirements
+- Windows PowerShell 5.1 or PowerShell 7+
+- Windows Operating System
+- Active Directory environment
+- Administrator privileges
+
+### Required PowerShell Modules
+```powershell
+# Check if modules are installed
+Get-Module -ListAvailable -Name @('ActiveDirectory', 'AdmPwd.PS')
+
+# Install required modules
+Install-Module -Name AdmPwd.PS -Force
+```
+
+## 📥 Installation
+
+1. Clone or download the repository:
+```powershell
+git clone https://github.com/yourusername/powershell-admin-toolkit.git
+```
+
+2. Ensure execution policy allows script execution:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+3. Verify LAPS installation:
+```powershell
+Get-Module AdmPwd.PS -ListAvailable
+```
+
+## 🚀 Usage
+
+### Get-PasswordLAPS.ps1
+```powershell
+# Run the script
+.\Get-PasswordLAPS.ps1
+
+# Follow the interactive prompts:
+# 1. Enter domain credentials
+# 2. Specify target hostname
+# 3. View LAPS password
+```
+
+### Ping-Computer.ps1
+```powershell
+# Run the script
+.\Ping-Computer.ps1
+
+# Options:
+# - Specify IP range
+# - Enable/disable DNS lookup
+# - Configure parallel execution
+# - Export results to CSV/HTML
+```
+
+### Remote-Computer.ps1
+```powershell
+# Run the script
+.\Remote-Computer.ps1
+
+# Available options:
+# 1. LAPS authentication
+# 2. Local/custom credentials
+# 3. View connection history
+# 4. Manage credential cache
+```
+
+## ⚙️ Configuration
+
+### Default Configuration
+Each script includes a configuration section at the top:
+
 ```powershell
 $config = @{
     Domain = $env:USERDNSDOMAIN
-    DefaultAdminAccount = "admdesktop"
+    LogPath = Join-Path $PSScriptRoot "logs"
+    CredentialCache = $true
+    CacheTimeout = 30  # minutes
 }
 ```
 
-## Usage
+### Customization
+- Modify the config hashtable in each script
+- Adjust timeouts, retries, and other parameters
+- Configure logging paths and levels
+- Set default values for common parameters
 
-### Get-PasswordLAPS.ps1
-1. Run the script
-2. Enter domain credentials
-3. Enter target hostname
-4. View LAPS password
-5. Choose to continue or exit
+## 🔒 Security
 
-### Ping-Computer.ps1
-1. Run the script
-2. Enter target IP address
-3. Choose to use custom range (optional)
-4. Enable/disable DNS lookup
-5. View results
+### Features
+- Secure credential handling using SecureString
+- No hardcoded credentials
+- Credential caching with timeouts
+- Session validation
+- Comprehensive logging for audit trails
 
-### Remote-Computer.ps1
-1. Run the script
-2. Choose authentication method:
-   - LAPS password
-   - Local/custom credentials
-3. Enter required credentials
-4. Connect to remote system
+### Best Practices
+- Always use domain accounts with minimum required permissions
+- Regularly rotate credentials
+- Monitor and review logs
+- Keep PowerShell and modules updated
+- Use HTTPS for remote connections when possible
 
-## Security Features
-- Secure password handling using SecureString
-- Masked password input
-- Proper credential object usage
-- Error handling with security-conscious messages
-- No hardcoded credentials or domains
+## 📝 Logging
+
+### Log Locations
+- LAPS access: `logs\laps_access.log`
+- Network scans: `logs\network_scan.log`
+- Remote access: `logs\remote_access.log`
+
+### Log Levels
+- Info: Normal operations
+- Warning: Non-critical issues
+- Error: Critical problems requiring attention
+
+## ❗ Troubleshooting
+
+### Common Issues
+
+#### LAPS Password Retrieval Fails
+- Verify domain connectivity
+- Check LAPS installation
+- Confirm user permissions
+- Review error logs
+
+#### Network Scan Issues
+- Check network connectivity
+- Verify IP range format
+- Ensure sufficient permissions
+- Monitor resource usage
+
+#### Remote Access Problems
+- Verify target computer is online
+- Check Windows Remote Management
+- Confirm firewall settings
+- Review authentication logs
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- PowerShell Community
+- Microsoft LAPS Team
+- Active Directory Team
+
+## 📞 Support
+
+For support:
+1. Check the troubleshooting guide
+2. Review closed issues
+3. Open a new issue with:
+   - Script version
+   - PowerShell version
+   - Error messages
+   - Logs
